@@ -1,8 +1,8 @@
 // recoil/wrongAnswerAtom.ts
 import { atom } from "recoil";
-import { QuizItem } from "../types/quiz";
+import { QuizResultItem } from "../types/quiz";
 
-export const wrongAnswersAtom = atom<QuizItem[]>({
+export const wrongAnswersAtom = atom<QuizResultItem[]>({
   key: "wrongAnswers",
   default: [],
 });
