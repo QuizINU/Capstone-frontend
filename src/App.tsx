@@ -1,10 +1,27 @@
-import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import UploadPage from "./pages/UploadPage";
+import QuizPage from "./pages/QuizPage";
+import ResultPage from "./pages/ResultPage";
+import ReviewPage from "./pages/ReviewPage";
+import MyPage from "./pages/MyPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 function App() {
   return (
-    <div className="text-3xl font-bold text-blue-600 p-4">
-      🎉 Tailwind 적용 완료!
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/upload" element={<UploadPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/result" element={<ResultPage />} />
+        <Route path="/review" element={<ReviewPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
