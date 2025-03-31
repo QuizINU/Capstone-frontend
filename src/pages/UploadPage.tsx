@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UploadPage = () => {
+  const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [summary, setSummary] = useState("");
   const [quiz, setQuiz] = useState<any[]>([]);
@@ -29,6 +31,7 @@ const UploadPage = () => {
 
       setSummary(res.data.summary);
       setQuiz(res.data.quiz);
+      navigate("/quiz", { state: { quiz: res.data.quiz } });
     } catch (err) {
       alert("파일 업로드 또는 요약/퀴즈 생성 실패");
       console.error(err);
