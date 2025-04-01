@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { QuizResultItem } from "../types/quiz";
 
-export const wrongAnswersAtom = atom<QuizResultItem[]>({
-  key: "wrongAnswers",
+export const personalNoteAtom = atom<QuizResultItem[]>({
+  key: "personalNote",
   default: [],
 });
