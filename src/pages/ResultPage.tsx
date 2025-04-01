@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { QuizResultItem } from "../types/quiz";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { personalNoteAtom } from "../recoil/personalNoteAtom";
 
 const ResultPage = () => {
@@ -9,7 +9,7 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const result = location.state?.result as QuizResultItem[] | undefined;
 
-  const setPersonalNote = useSetRecoilState(personalNoteAtom);
+  const [personalNote, setPersonalNote] = useRecoilState(personalNoteAtom);
 
   useEffect(() => {
     if (!result) {
@@ -23,11 +23,14 @@ const ResultPage = () => {
   const correctCount = result.filter((r) => r.isCorrect).length;
 
   const handleSaveToNote = (item: QuizResultItem) => {
-    setPersonalNote((prev) => {
-      // 중복 저장 방지
-      const isAlreadySaved = prev.some((p) => p.question === item.question);
-      return isAlreadySaved ? prev : [...prev, item];
-    });
+    const isAlreadySaved = personalNote.some(
+      (p) => p.question === item.question
+    );
+    if (isAlreadySaved) return;
+
+    const updated = [...personalNote, item];
+    setPersonalNote(updated);
+    console.log("오답노트에 저장됨:", updated);
   };
 
   return (
@@ -37,26 +40,37 @@ const ResultPage = () => {
         맞힌 개수: {correctCount} / {result.length}
       </p>
 
-      {result.map((item, idx) => (
-        <div key={idx} className="bg-white p-4 rounded shadow space-y-2">
-          <p className="font-semibold">
-            {idx + 1}. {item.question}
-          </p>
-          <p className={item.isCorrect ? "text-green-600" : "text-red-500"}>
-            {item.isCorrect
-              ? "✅ 정답"
-              : `❌ 오답 (정답: ${item.correctAnswer})`}
-          </p>
-          <p>내 답변: {item.userAnswer}</p>
+      {result.map((item, idx) => {
+        const isAlreadySaved = personalNote.some(
+          (p) => p.question === item.question
+        );
 
-          <button
-            onClick={() => handleSaveToNote(item)}
-            className="text-sm text-blue-600 underline hover:text-blue-800"
-          >
-            📌 오답노트에 저장
-          </button>
-        </div>
-      ))}
+        return (
+          <div key={idx} className="bg-white p-4 rounded shadow space-y-2">
+            <p className="font-semibold">
+              {idx + 1}. {item.question}
+            </p>
+            <p className={item.isCorrect ? "text-green-600" : "text-red-500"}>
+              {item.isCorrect
+                ? "✅ 정답"
+                : `❌ 오답 (정답: ${item.correctAnswer})`}
+            </p>
+            <p>내 답변: {item.userAnswer}</p>
+
+            <button
+              onClick={() => handleSaveToNote(item)}
+              disabled={isAlreadySaved}
+              className={`text-sm underline ${
+                isAlreadySaved
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:text-blue-800"
+              }`}
+            >
+              {isAlreadySaved ? "✔️ 저장됨" : "📌 오답노트에 저장"}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };
