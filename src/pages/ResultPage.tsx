@@ -23,22 +23,33 @@ const ResultPage = () => {
 
   const correctCount = result.filter((r) => r.isCorrect).length;
 
-  const handleSaveToNote = async (item: QuizResultItem) => {
-    const isAlreadySaved = personalNote.some(
-      (p) => p.question === item.question
-    );
-    if (isAlreadySaved) return;
+  const handleToggleNote = async (item: QuizResultItem) => {
+    const exists = personalNote.some((p) => p.question === item.question);
 
-    try {
-      const res = await axios.post("http://localhost:8080/api/notes", item);
-      const saved = res.data;
-      const updated = [...personalNote, saved];
-      setPersonalNote(updated);
+    if (exists) {
+      const noteToDelete = personalNote.find(
+        (p) => p.question === item.question
+      );
+      if (!noteToDelete || !noteToDelete.id) return;
 
-      console.log("오답노트에 저장됨:", saved);
-    } catch (err) {
-      console.error("오답노트 저장 실패:", err);
-      alert("오답노트 저장 중 오류가 발생했습니다.");
+      try {
+        await axios.delete(
+          `http://localhost:8080/api/notes/${noteToDelete.id}`
+        );
+        const updated = personalNote.filter((p) => p.id !== noteToDelete.id);
+        setPersonalNote(updated);
+        console.log("오답노트에서 제거됨:", noteToDelete.id);
+      } catch (err) {
+        console.error("삭제 실패", err);
+      }
+    } else {
+      try {
+        const res = await axios.post("http://localhost:8080/api/notes", item);
+        setPersonalNote((prev) => [...prev, res.data]);
+        console.log("오답노트에 저장됨:", res.data);
+      } catch (err) {
+        console.error("저장 실패", err);
+      }
     }
   };
 
@@ -67,15 +78,14 @@ const ResultPage = () => {
             <p>내 답변: {item.userAnswer}</p>
 
             <button
-              onClick={() => handleSaveToNote(item)}
-              disabled={isAlreadySaved}
+              onClick={() => handleToggleNote(item)}
               className={`text-sm underline ${
                 isAlreadySaved
-                  ? "text-gray-400 cursor-not-allowed"
+                  ? "text-red-500 hover:text-red-700"
                   : "text-blue-600 hover:text-blue-800"
               }`}
             >
-              {isAlreadySaved ? "✔️ 저장됨" : "📌 오답노트에 저장"}
+              {isAlreadySaved ? "🗑️ 오답노트에서 삭제" : "📌 오답노트에 저장"}
             </button>
           </div>
         );

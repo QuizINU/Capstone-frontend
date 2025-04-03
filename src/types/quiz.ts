@@ -5,6 +5,7 @@ export interface QuizItem {
 }
 
 export interface QuizResultItem {
+  id: number;
   question: string;
   correctAnswer: string;
   userAnswer: string;

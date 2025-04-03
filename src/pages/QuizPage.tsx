@@ -16,7 +16,6 @@ const QuizPage = () => {
       navigate("/upload");
     } else {
       setQuiz(passedQuiz);
-      setUserAnswers(Array(passedQuiz.length).fill("")); // 초기화
     }
   }, [passedQuiz, navigate]);
 
