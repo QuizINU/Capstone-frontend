@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { QuizResultItem } from "../types/quiz";
 import { useRecoilState } from "recoil";
 import { personalNoteAtom } from "../recoil/personalNoteAtom";
+import axios from "axios";
 
 const ResultPage = () => {
   const location = useLocation();
@@ -14,7 +15,7 @@ const ResultPage = () => {
   useEffect(() => {
     if (!result) {
       alert("결과 데이터가 없습니다. 다시 퀴즈를 풀어주세요.");
-      navigate("/quiz");
+      navigate("/upload");
     }
   }, [result, navigate]);
 
@@ -22,15 +23,23 @@ const ResultPage = () => {
 
   const correctCount = result.filter((r) => r.isCorrect).length;
 
-  const handleSaveToNote = (item: QuizResultItem) => {
+  const handleSaveToNote = async (item: QuizResultItem) => {
     const isAlreadySaved = personalNote.some(
       (p) => p.question === item.question
     );
     if (isAlreadySaved) return;
 
-    const updated = [...personalNote, item];
-    setPersonalNote(updated);
-    console.log("오답노트에 저장됨:", updated);
+    try {
+      const res = await axios.post("http://localhost:8080/api/notes", item);
+      const saved = res.data;
+      const updated = [...personalNote, saved];
+      setPersonalNote(updated);
+
+      console.log("오답노트에 저장됨:", saved);
+    } catch (err) {
+      console.error("오답노트 저장 실패:", err);
+      alert("오답노트 저장 중 오류가 발생했습니다.");
+    }
   };
 
   return (
