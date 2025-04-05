@@ -1,3 +1,5 @@
+import { Memo } from "./memo";
+
 export interface QuizItem {
   question: string;
   choices: string[];
@@ -7,7 +9,8 @@ export interface QuizItem {
 export interface QuizResultItem {
   id: number;
   question: string;
-  correctAnswer: string;
   userAnswer: string;
+  correctAnswer: string;
   isCorrect: boolean;
+  memos?: Memo[];
 }
